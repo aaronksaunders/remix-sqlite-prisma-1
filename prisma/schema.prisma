@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // We set an `id` variable
+  // - @id (because it's an ID)
+  // - @default(autoincrement()) (default value is auto-incremented)
+  id Int @id @default(autoincrement())
+
+  // - @unique (because we want the user to be unique
+  // based on the email - two users can't have the same)
+  email String @unique
+
+  username String
+
+  // With a `BookMark[]` type (one-to-many relationship)
+  // Because each user can have between 0 and an infinite number of bookmarks
+  bookmarks BookMark[]
+}
+
+model BookMark {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+
+  // note about the bookmark
+  text String
+
+  url String @default("")
+
+  // It will link the `id` of the `User` model
+  userId Int
+
+  // We set a `user` variable
+  // With a `User` type (many-to-one relationship)
+  // Because each bookmark is associated with a user
+  // 
+  // We link the `User` to a `Bookmark` based on:
+  // - the `userId` in the `Bookmark` model
+  // - the `id` in the `User` model
+  user User @relation(fields: [userId], references: [id])
+}
